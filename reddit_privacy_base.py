@@ -4,10 +4,6 @@ import datetime
 import sqlite3
 import schedule
 
-reddit = praw.Reddit(client_id='epKPUwrZ5yb51g',
-                     client_secret="iwkv2-KQ3-VduKJDdca57vls35w", password='3De1OlR#',
-                     user_agent='ardonpage', username='ardonpage')
-
 
 subreddits = [
         
