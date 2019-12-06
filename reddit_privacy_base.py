@@ -3,18 +3,22 @@ import praw
 import datetime
 import sqlite3
 import schedule
+from bs4 import BeautifulSoup
+import requests as rq
 
+content = rq.get('https://redditmetrics.com/top').content
+soup = BeautifulSoup(content, 'lxml')
 
-subreddits = [
-        
-        'HongKong', 'Sino', 'UCSD', 'Conservative', 'Libertarian', 
-        'socialism', 'communism', 'VoteBlue', 'history', 'AskReddit', 
-        'JoeRogan', 'nba', 'Tinder', 'nottheonion', 'NoStupidQuestions',
-        'DeathStranding', 'China', 'Jokes', 'liberalgunowners', 'changemyview', 
-        'HolUp'
+fields = soup.find_all("a")
 
-        ]
+lst = []
+for field in fields:
+    lst.append(field.text)
 
+subreddits = []
+for subreddit in lst:
+    if '/r/' in subreddit:
+        subreddits.append(subreddit.replace('/r/', ''))
 
 
 class Subreddit:
@@ -45,13 +49,13 @@ class Subreddit:
         mods = {}
         mod_removal_count = 0
         for moderator in moderators:
-            for comment in moderator.comments.new(limit = 500):
+            for comment in moderator.comments.new(limit = 1000):
                 if 'removed' in comment.body:
                     removal_count += 1
                     mod_removal_count += 1
             mods[moderator.name] = mod_removal_count
             mod_removal_count = 0
-        #print(mods)
+        print(mods)
         score = (removal_count*(subscriber_count/(len(moderators)*20)))/subscriber_count
         return score
 
@@ -75,7 +79,8 @@ def db_insert(subreddit, new_index):
         conn.commit()
         conn.close()
 
-for subreddit in subreddits:
+
+"""for subreddit in subreddits:
     for i in range(3):
         try:
             occurance = datetime.datetime.today()
@@ -84,4 +89,4 @@ for subreddit in subreddits:
             print('Success with {} at {}\n'.format(subreddit, occurance))
             break
         except:
-            print('ERROR with {} subreddit at {}\n'.format(subreddit, occurance))
+            print('ERROR with {} subreddit at {}\n'.format(subreddit, occurance))"""
