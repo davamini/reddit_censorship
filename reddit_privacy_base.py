@@ -20,7 +20,6 @@ for subreddit in lst:
     if '/r/' in subreddit:
         subreddits.append(subreddit.replace('/r/', ''))
 
-
 class Subreddit:
 
     def __init__(self, name):
@@ -49,7 +48,7 @@ class Subreddit:
         mods = {}
         mod_removal_count = 0
         for moderator in moderators:
-            for comment in moderator.comments.new(limit = 1000):
+            for comment in moderator.comments.new(limit = 500):
                 if 'removed' in comment.body:
                     removal_count += 1
                     mod_removal_count += 1
@@ -65,28 +64,39 @@ class Subreddit:
 
 
 def create_reddit_db():
-
+    """Creates indexes.db
+    for subreddit privacy indexes
+    """
     conn = sqlite3.connect('indexes.db')
     c = conn.cursor()
     c.execute("""CREATE TABLE reddit_indexes (subreddit text, indexes integer, date date)""")
 
 def db_insert(subreddit, new_index):
-        date_update = datetime.datetime.today()
-        conn = sqlite3.connect('indexes.db')
-        c = conn.cursor()
-        c.execute("INSERT INTO reddit_indexes VALUES (:subreddit, :indexes, :date)",\
-        {'subreddit': subreddit, 'indexes': new_index, 'date': date_update})
-        conn.commit()
-        conn.close()
+    """Inserts latest privacy indexes into
+    reddit D
+    """
+    date_update = datetime.datetime.today()
+    conn = sqlite3.connect('indexes.db')
+    c = conn.cursor()
+    c.execute("INSERT INTO reddit_indexes VALUES (:subreddit, :indexes, :date)",\
+    {'subreddit': subreddit, 'indexes': new_index, 'date': date_update})
+    conn.commit()
+    conn.close()
 
+def scan_reddit_privacy():
+    """Scans top 100 subreddits
+    on reddit.com for their privacy
+    indexes. Adds them to indexes.db
+    """
+    for subreddit in subreddits:
+        for i in range(3):
+            try:
+                occurance = datetime.datetime.today()
+                new_subreddit = Subreddit(subreddit)
+                db_insert(new_subreddit.name, new_subreddit.score)
+                print('Success with {} at {}\n'.format(subreddit, occurance))
+                break
+            except:
+                print('ERROR with {} subreddit at {}\n'.format(subreddit, occurance))
 
-"""for subreddit in subreddits:
-    for i in range(3):
-        try:
-            occurance = datetime.datetime.today()
-            new_subreddit = Subreddit(subreddit)
-            db_insert(new_subreddit.name, new_subreddit.score)
-            print('Success with {} at {}\n'.format(subreddit, occurance))
-            break
-        except:
-            print('ERROR with {} subreddit at {}\n'.format(subreddit, occurance))"""
+scan_reddit_privacy()
