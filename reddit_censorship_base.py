@@ -21,9 +21,6 @@ for subreddit in lst:
     if '/r/' in subreddit:
         subreddits.append(subreddit.replace('/r/', ''))
 
-reddit = praw.Reddit(client_id='epKPUwrZ5yb51g',
-                     client_secret="iwkv2-KQ3-VduKJDdca57vls35w", password='3De1OlR#',
-                     user_agent='ardonpage', username='ardonpage')
 
 
 class Subreddit:
