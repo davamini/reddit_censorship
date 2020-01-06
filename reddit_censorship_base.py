@@ -9,25 +9,6 @@ import gsheets_funcs
 import censorship_score_funcs
 import ast
 
-content = rq.get('https://redditmetrics.com/top').content
-soup = BeautifulSoup(content, 'lxml')
-
-fields = soup.find_all("a")
-
-lst = []
-for field in fields:
-    lst.append(field.text)
-
-subreddits = []
-for subreddit in lst:
-    if '/r/' in subreddit:
-        subreddits.append(subreddit.replace('/r/', ''))
-
-reddit = praw.Reddit(client_id='epKPUwrZ5yb51g',
-                     client_secret="iwkv2-KQ3-VduKJDdca57vls35w", password='3De1OlR#',
-                     user_agent='ardonpage', username='ardonpage')
-
-
 class Subreddit:
 
     def __init__(self, name):
